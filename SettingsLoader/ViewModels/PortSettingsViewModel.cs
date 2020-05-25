@@ -125,10 +125,13 @@ namespace SettingsLoader.ViewModels
             _events.PublishOnUIThread(PortSettings);
         }
 
+
+
         protected override void OnInitialize()
         {
             string[] ports = SerialPort.GetPortNames();
-
+            //ports?.ToList().ForEach(port => Ports.Add(port));
+            
             if (ports != null)
             {
                 foreach (var port in ports)
@@ -138,20 +141,18 @@ namespace SettingsLoader.ViewModels
             }
         }
 
-        public void Handle(string message)
-        {
-            if (string.IsNullOrWhiteSpace(message))
-            {
-                return;
-            }
 
-            if (message.StartsWith("COM"))
+
+        protected override void OnActivate()
+        {
+            base.OnActivate();
+
+            if (IoC.Get<ShellViewModel>().PortSettings != null)
             {
-                string[] comPortSettings = message.Split('/');
+                string[] comPortSettings = IoC.Get<ShellViewModel>().PortSettings.Split('/');
                 SelectedPort = comPortSettings[0];
                 SelectedBaudRate = comPortSettings[1];
-                SelectedParity = comPortSettings[2]
-                    .Length > 1
+                SelectedParity = comPortSettings[2].Length > 1
                     ? comPortSettings[2]
                     : comPortSettings[2]
                     .Replace("N", "None")
@@ -159,6 +160,14 @@ namespace SettingsLoader.ViewModels
                     .Replace("O", "Odd");
 
                 SelectedStopBit = comPortSettings[4];
+            }
+        }
+
+        public void Handle(string message)
+        {
+            if (string.IsNullOrEmpty(message))
+            {
+                return;
             }
         }
     }

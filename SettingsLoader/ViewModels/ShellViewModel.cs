@@ -77,23 +77,37 @@ namespace SettingsLoader.ViewModels
             }
         }
 
-        public bool CanEditMode => PortSettings != null;
-        public void EditMode()
-        {
-            ActivateItem(IoC.Get<TableViewModel>());
-            _events.PublishOnUIThread(PortSettings);
-        }
-
-        public bool CanEditPortSettings => PortSettings != null;
+        public bool CanEditPortSettings => true;
         public void EditPortSettings()
         {
             ActivateItem(IoC.Get<PortSettingsViewModel>());
-            _events.PublishOnUIThread(PortSettings);
+        }
+
+        public bool CanViewMode => PortSettings != null;
+        public void ViewMode()
+        {
+            ActivateItem(IoC.Get<TableViewModel>());
+        }
+
+        public bool CanEditMode => true;
+        public void EditMode()
+        {
+            ActivateItem(IoC.Get<TableViewModel>());
         }
 
         public void Handle(string message)
         {
-            PortSettings = message;
+            if (string.IsNullOrEmpty(message))
+            {
+                return;
+            }
+
+            if (message.StartsWith("COM"))
+            {
+                PortSettings = message;
+                ActivateItem(IoC.Get<TableViewModel>());
+            }
+
         }
     }
 }
