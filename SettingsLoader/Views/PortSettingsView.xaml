@@ -22,23 +22,22 @@
                    Text="COM Port"/>
             <ComboBox IsEditable="False" Margin="0 0 0 10"
                       x:Name="Ports"/>
-            
+
             <TextBlock Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center"
                    Text="Baud Rate"/>
             <ComboBox IsEditable="False" Margin="0 0 0 10"
                       x:Name="BaudRates"/>
-            
+
             <TextBlock Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center"
                    Text="Parity"/>
             <ComboBox IsEditable="False" Margin="0 0 0 10"
                       x:Name="Parities"/>
-            
+
             <TextBlock Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center"
                    Text="Stop bit"/>
             <ComboBox IsEditable="False" Margin="0 0 0 10"
                       x:Name="StopBits"/>
+            <Button Content="Apply" x:Name="Apply" Margin="0 40 0 0"/>
         </StackPanel>
-        <Button Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Content="Apply"
-                x:Name="Apply"/>
     </Grid>
 </UserControl>

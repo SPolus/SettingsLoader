@@ -8,14 +8,12 @@ using System.Threading.Tasks;
 
 namespace SettingsLoader.ViewModels
 {
-    public class PortSettingsViewModel : Screen, IHandle<string>
+    public class PortSettingsViewModel : Screen
     {
-        private IEventAggregator _events;
-
+        private readonly IEventAggregator _events;
         public PortSettingsViewModel(IEventAggregator events)
         {
             _events = events;
-            _events.Subscribe(this);
         }
 
         private BindableCollection<string> _ports = new BindableCollection<string>();
@@ -125,12 +123,9 @@ namespace SettingsLoader.ViewModels
             _events.PublishOnUIThread(PortSettings);
         }
 
-
-
         protected override void OnInitialize()
         {
             string[] ports = SerialPort.GetPortNames();
-            //ports?.ToList().ForEach(port => Ports.Add(port));
             
             if (ports != null)
             {
@@ -140,8 +135,6 @@ namespace SettingsLoader.ViewModels
                 }
             }
         }
-
-
 
         protected override void OnActivate()
         {
@@ -163,12 +156,5 @@ namespace SettingsLoader.ViewModels
             }
         }
 
-        public void Handle(string message)
-        {
-            if (string.IsNullOrEmpty(message))
-            {
-                return;
-            }
-        }
     }
 }

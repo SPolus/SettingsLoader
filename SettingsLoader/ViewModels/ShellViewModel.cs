@@ -1,11 +1,14 @@
 ﻿using Caliburn.Micro;
 using Microsoft.Win32;
 using SettingsLoader.Models;
+using SettingsLoader.Services;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace SettingsLoader.ViewModels
 {
@@ -25,6 +28,10 @@ namespace SettingsLoader.ViewModels
 
         private readonly IEventAggregator _events;
 
+        private string _path = $"{Environment.CurrentDirectory}\\LastSession\\DeviceConfig.json";
+
+        private JsonFileService<BindableCollection<TableModel>> _jsonFileService = new JsonFileService<BindableCollection<TableModel>>();
+
         public ShellViewModel(IEventAggregator events)
         {
             _events = events;
@@ -41,8 +48,10 @@ namespace SettingsLoader.ViewModels
             {
                 _portSettings = value;
                 NotifyOfPropertyChange(() => PortSettings);
-                NotifyOfPropertyChange(() => CanEditMode);
                 NotifyOfPropertyChange(() => CanEditPortSettings);
+                NotifyOfPropertyChange(() => CanViewMode);
+                NotifyOfPropertyChange(() => CanEditMode);
+                
             }
         }
 
@@ -72,8 +81,86 @@ namespace SettingsLoader.ViewModels
 
             if (result == true)
             {
-                var filename = ofd.FileName;
-                //OpenFile(filename);
+                _path = ofd.FileName;
+                OpenFile(_path);
+            }
+        }
+
+        private void OpenFile(string path)
+        {
+            try
+            {
+                Registers = _jsonFileService.LoadData(path);
+
+                if (PortSettings != null)
+                {
+                    ActivateItem(IoC.Get<TableViewModel>());
+                }
+            }
+
+            catch (FileNotFoundException)
+            {
+                var result = MessageBox.Show("Create File?", "File not found", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
+                switch (result)
+                {
+                    case MessageBoxResult.Yes:
+                        if (string.IsNullOrEmpty(path))
+                        {
+                            TryClose();
+                        }
+
+                        File.CreateText(path).Dispose();
+                        break;
+
+                    case MessageBoxResult.No:
+                        TryClose();
+                        break;
+                }
+
+                Registers = new BindableCollection<TableModel>();
+            }
+
+            catch (FileFormatException ex)
+            {
+                Registers = new BindableCollection<TableModel>();
+                MessageBox.Show(ex.Message, "", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                TryClose();
+            }
+        }
+
+        public void FileSave()
+        {
+            try
+            {
+                _jsonFileService.SaveData(_path, Registers);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        public void FileSaveAs()
+        {
+            var sfd = new SaveFileDialog()
+            {
+                DefaultExt = ".json",
+                Filter = "Json files (*.json)|*.json",
+                InitialDirectory = Environment.CurrentDirectory
+            };
+
+            var result = sfd.ShowDialog();
+
+            if (result == true)
+            {
+                _path = sfd.FileName;
+                FileSave();
             }
         }
 
@@ -105,9 +192,17 @@ namespace SettingsLoader.ViewModels
             if (message.StartsWith("COM"))
             {
                 PortSettings = message;
-                ActivateItem(IoC.Get<TableViewModel>());
+                
+                ActivateItem(IoC.Get<HelpViewModel>());
             }
 
+        }
+
+        protected override void OnInitialize()
+        {
+            base.OnInitialize();
+
+            // TODO: Create initial config file
         }
     }
 }

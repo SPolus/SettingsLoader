@@ -26,7 +26,8 @@ namespace SettingsLoader
 
             _container
                 .PerRequest<PortSettingsViewModel>()
-                .PerRequest<TableViewModel>();
+                .PerRequest<TableViewModel>()
+                .PerRequest<HelpViewModel>();
 
             //GetType().Assembly.GetTypes()
             //    .Where(type => type.IsClass)

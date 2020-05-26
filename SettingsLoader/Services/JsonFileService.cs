@@ -8,31 +8,18 @@ using System.Threading.Tasks;
 
 namespace SettingsLoader.Services
 {
-    public class JsonFileService<T>
+    public class JsonFileService<T> : IFileService<T>
     {
-        private readonly T _data;
-        private readonly string _path;
-
-        public JsonFileService(T data, string path)
+        public T LoadData(string path)
         {
-            if (data == null)
-            {
-                throw new ArgumentNullException(nameof(data));
-            }
-            _data = data;
-            _path = path ?? throw new ArgumentNullException(nameof(path));
-        }
-
-        public T LoadData()
-        {
-            var file = new FileInfo(_path);
+            var file = new FileInfo(path);
 
             if (!file.Exists)
             {
                 throw new FileNotFoundException();
             }
 
-            using (StreamReader sr = File.OpenText(_path))
+            using (StreamReader sr = File.OpenText(path))
             {
                 var fileText = sr.ReadToEnd();
 
@@ -45,9 +32,16 @@ namespace SettingsLoader.Services
             }
         }
 
-        public void SaveData(T data)
+        public void SaveData(string path, T data)
         {
-            using (StreamWriter sw = File.CreateText(_path))
+            string dir = Path.GetDirectoryName(path);
+
+            if (!Directory.Exists(dir))
+            {
+                Directory.CreateDirectory(dir);
+            }
+
+            using (StreamWriter sw = File.CreateText(path))
             {
                 string output = JsonConvert.SerializeObject(data, Formatting.Indented);
                 sw.Write(output);

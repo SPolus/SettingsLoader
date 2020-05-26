@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace SettingsLoader.ViewModels
 {
@@ -14,11 +15,28 @@ namespace SettingsLoader.ViewModels
 
         public string PortSettings => IoC.Get<ShellViewModel>().PortSettings;
 
-        public BindableCollection<TableModel> Registers => IoC.Get<ShellViewModel>().Registers;
+        private BindableCollection<TableModel> _registers = new BindableCollection<TableModel>();
+
+        public BindableCollection<TableModel> Registers
+        {
+            get => _registers;
+            set 
+            { 
+                _registers = value; 
+            }
+        }
+
         public TableViewModel(IEventAggregator events)
         {
             _events = events;
             _events.Subscribe(this);
+        }
+
+        protected override void OnActivate()
+        {
+            base.OnActivate();
+            Registers = IoC.Get<ShellViewModel>().Registers;
+            Application.Current.MainWindow.WindowState = WindowState.Maximized;
         }
     }
 }

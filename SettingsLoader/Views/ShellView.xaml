@@ -9,20 +9,21 @@
     <DockPanel LastChildFill="True">
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File">
-                <MenuItem Header="_Open" x:Name="FileOpen"/>
-                <MenuItem Header="_Save" x:Name="FileSave"/>
-                <MenuItem Header="_Save as ..." x:Name="FileSaveAs"/>
+                <MenuItem Header="New" x:Name="FileNew"/>
+                <MenuItem Header="Open" x:Name="FileOpen"/>
+                <MenuItem Header="Save" x:Name="FileSave"/>
+                <MenuItem Header="Save as..." x:Name="FileSaveAs"/>
                 <Separator/>
-                <MenuItem Header="_Exit" x:Name="FileExit"/>
+                <MenuItem Header="Exit" x:Name="FileExit"/>
             </MenuItem>
-            <MenuItem Header="_Edit">
+            <MenuItem Header="Settings">
                 <MenuItem Header="Port Settings" x:Name="EditPortSettings"/>
                 <MenuItem Header="View Mode" x:Name="ViewMode"/>
                 <MenuItem Header="Edit mode" x:Name="EditMode"/>
             </MenuItem>
             <MenuItem Header="_About">
-                <MenuItem Header="Help" x:Name="AboutHelp"/>
-                <MenuItem Header="About" x:Name="AboutAbout"/>
+                <MenuItem Header="Help" x:Name="Help"/>
+                <MenuItem Header="About" x:Name="About"/>
             </MenuItem>
         </Menu>
         <StatusBar DockPanel.Dock="Bottom">
