@@ -18,10 +18,9 @@
             </MenuItem>
             <MenuItem Header="Settings">
                 <MenuItem Header="Port Settings" x:Name="EditPortSettings"/>
-                <MenuItem Header="View Mode" x:Name="ViewMode"/>
-                <MenuItem Header="Edit mode" x:Name="EditMode"/>
+                <MenuItem Header="Configuration" x:Name="EditConfiguration"/>
             </MenuItem>
-            <MenuItem Header="_About">
+            <MenuItem Header="Help">
                 <MenuItem Header="Help" x:Name="Help"/>
                 <MenuItem Header="About" x:Name="About"/>
             </MenuItem>

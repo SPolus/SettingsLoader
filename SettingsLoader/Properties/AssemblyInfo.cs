@@ -10,7 +10,7 @@ using System.Windows;
 [assembly: AssemblyTitle("SettingsLoader")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Pavel Solomin")]
 [assembly: AssemblyProduct("SettingsLoader")]
 [assembly: AssemblyCopyright("Copyright ©  2020")]
 [assembly: AssemblyTrademark("")]

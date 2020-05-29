@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 
 namespace SettingsLoader.ViewModels
 {
@@ -30,6 +31,52 @@ namespace SettingsLoader.ViewModels
         {
             _events = events;
             _events.Subscribe(this);
+        }
+
+        private TableModel _selectedRegister;
+
+        public TableModel SelectedRegister
+        {
+            get { return _selectedRegister; }
+            set 
+            {
+                if (value != null)
+                {
+                    _selectedRegister = value;
+                    NotifyOfPropertyChange(() => SelectedRegister);
+                }
+            }
+        }
+
+
+        public void Registers_PreviewKeyDown(KeyEventArgs e)
+        {
+            if (e.Key == Key.Up || e.Key == Key.Down)
+            {
+                e.Handled = true;
+            }
+
+            Registers_KeyDown(e);
+        }
+
+        private void Registers_KeyDown(KeyEventArgs e)
+        {
+            if (e.KeyboardDevice.Modifiers == ModifierKeys.Control && e.Key == Key.Up)
+            {
+                MessageBox.Show("CTRL + UP");
+            }
+
+            if (e.KeyboardDevice.Modifiers == ModifierKeys.Control && e.Key == Key.Down)
+            {
+                MessageBox.Show("CTRL + DOWN");
+            }
+            
+            e.Handled = false;
+        }
+
+        public void AddRow()
+        {
+            Registers.Add(new TableModel());
         }
 
         protected override void OnActivate()

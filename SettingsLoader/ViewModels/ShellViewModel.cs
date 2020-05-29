@@ -32,6 +32,8 @@ namespace SettingsLoader.ViewModels
 
         private JsonFileService<BindableCollection<TableModel>> _jsonFileService = new JsonFileService<BindableCollection<TableModel>>();
 
+        private bool _isFileOpened;
+
         public ShellViewModel(IEventAggregator events)
         {
             _events = events;
@@ -48,10 +50,6 @@ namespace SettingsLoader.ViewModels
             {
                 _portSettings = value;
                 NotifyOfPropertyChange(() => PortSettings);
-                NotifyOfPropertyChange(() => CanEditPortSettings);
-                NotifyOfPropertyChange(() => CanViewMode);
-                NotifyOfPropertyChange(() => CanEditMode);
-                
             }
         }
 
@@ -63,11 +61,11 @@ namespace SettingsLoader.ViewModels
             set { _registers = value; }
         }
 
-
-        public void FileExit()
+        public void FileNew()
         {
-            TryClose();
+
         }
+        
         public void FileOpen()
         {
             var ofd = new OpenFileDialog()
@@ -96,6 +94,12 @@ namespace SettingsLoader.ViewModels
                 {
                     ActivateItem(IoC.Get<TableViewModel>());
                 }
+
+                _isFileOpened = true;
+                NotifyOfPropertyChange(() => CanEditConfiguration);
+                NotifyOfPropertyChange(() => CanFileSave);
+                NotifyOfPropertyChange(() => CanFileSaveAs);
+
             }
 
             catch (FileNotFoundException)
@@ -134,6 +138,7 @@ namespace SettingsLoader.ViewModels
             }
         }
 
+        public bool CanFileSave => _isFileOpened;
         public void FileSave()
         {
             try
@@ -146,6 +151,7 @@ namespace SettingsLoader.ViewModels
             }
         }
 
+        public bool CanFileSaveAs => _isFileOpened;
         public void FileSaveAs()
         {
             var sfd = new SaveFileDialog()
@@ -164,22 +170,42 @@ namespace SettingsLoader.ViewModels
             }
         }
 
-        public bool CanEditPortSettings => true;
+        public void FileExit()
+        {
+            TryClose();
+        }
+
         public void EditPortSettings()
         {
             ActivateItem(IoC.Get<PortSettingsViewModel>());
         }
 
-        public bool CanViewMode => PortSettings != null;
-        public void ViewMode()
+        public bool CanEditConfiguration => _isFileOpened;
+        public void EditConfiguration()
         {
-            ActivateItem(IoC.Get<TableViewModel>());
+            ActivateItem(IoC.Get<ConfigurationViewModel>());
         }
 
-        public bool CanEditMode => true;
-        public void EditMode()
+        //public bool CanViewMode => PortSettings != null;
+        //public void ViewMode()
+        //{
+        //    ActivateItem(IoC.Get<TableViewModel>());
+        //}
+
+        //public bool CanEditMode => true;
+        //public void EditMode()
+        //{
+        //    ActivateItem(IoC.Get<TableViewModel>());
+        //}
+
+        public void Help()
         {
-            ActivateItem(IoC.Get<TableViewModel>());
+            ActivateItem(IoC.Get<HelpViewModel>());
+        }
+
+        public void About()
+        {
+            ActivateItem(IoC.Get<AboutViewModel>());
         }
 
         public void Handle(string message)
@@ -192,6 +218,12 @@ namespace SettingsLoader.ViewModels
             if (message.StartsWith("COM"))
             {
                 PortSettings = message;
+
+                if (_isFileOpened)
+                {
+                    ActivateItem(IoC.Get<TableViewModel>());
+                    return;
+                }
                 
                 ActivateItem(IoC.Get<HelpViewModel>());
             }

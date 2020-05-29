@@ -20,14 +20,21 @@
         <StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="1">
             <TextBlock Text="Create new configuration:" TextAlignment="Center"/>
             <TextBlock Text="File --> New" Margin="0 0 0 10" TextAlignment="Center"/>
+            
             <TextBlock Text="Open existing configuration:" TextAlignment="Center"/>
             <TextBlock Text="File --> Open" Margin="0 0 0 10" TextAlignment="Center"/>
+            
             <TextBlock Text="Save current configuration:" TextAlignment="Center"/>
             <TextBlock Text="File --> Save" Margin="0 0 0 10" TextAlignment="Center"/>
+            
             <TextBlock Text="Save the configuration to another file:" TextAlignment="Center"/>
             <TextBlock Text="File --> Save As..." Margin="0 0 0 10" TextAlignment="Center"/>
+            
             <TextBlock Text="Open port settings:" TextAlignment="Center"/>
             <TextBlock Text="Settings --> Port" Margin="0 0 0 10" TextAlignment="Center"/>
+
+            <TextBlock Text="Change device configuration:" TextAlignment="Center"/>
+            <TextBlock Text="Settings --> Configuration" Margin="0 0 0 10" TextAlignment="Center"/>
         </StackPanel>
     </Grid>
 </UserControl>

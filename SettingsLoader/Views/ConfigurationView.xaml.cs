@@ -15,9 +15,12 @@ using System.Windows.Shapes;
 
 namespace SettingsLoader.Views
 {
-    public partial class TableView : UserControl
+    /// <summary>
+    /// Логика взаимодействия для ConfigurationView.xaml
+    /// </summary>
+    public partial class ConfigurationView : UserControl
     {
-        public TableView()
+        public ConfigurationView()
         {
             InitializeComponent();
         }
