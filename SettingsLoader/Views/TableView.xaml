@@ -26,9 +26,7 @@
             <Button Content="Write" Grid.Column="1"/>
         </Grid>
         <DataGrid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" 
-                  x:Name="Registers" AutoGenerateColumns="True" CanUserAddRows="False"
-                  cal:Message.Attach="[Event PreviewKeyDown] = [Action Registers_PreviewKeyDown($eventArgs)]">
+                  x:Name="Registers" AutoGenerateColumns="True" CanUserAddRows="False">
         </DataGrid>
-        <Button x:Name="AddRow" Grid.Column="0" Grid.Row="0" Content="Add Row"/>
     </Grid>
 </UserControl>

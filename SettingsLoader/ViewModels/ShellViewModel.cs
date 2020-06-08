@@ -175,6 +175,7 @@ namespace SettingsLoader.ViewModels
             TryClose();
         }
 
+        public bool CanEditPortSettings => true;
         public void EditPortSettings()
         {
             ActivateItem(IoC.Get<PortSettingsViewModel>());

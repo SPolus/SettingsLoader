@@ -89,6 +89,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="AppBootstrapper.cs" />
+    <Compile Include="Converters\MbFunctionToStringsConverter.cs" />
     <Compile Include="Models\TableModel.cs" />
     <Compile Include="Services\IFileService.cs" />
     <Compile Include="Services\JsonFileService.cs" />

@@ -15,9 +15,6 @@ using System.Windows.Shapes;
 
 namespace SettingsLoader.Views
 {
-    /// <summary>
-    /// Логика взаимодействия для ConfigurationView.xaml
-    /// </summary>
     public partial class ConfigurationView : UserControl
     {
         public ConfigurationView()

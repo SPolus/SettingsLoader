@@ -16,10 +16,6 @@ namespace SettingsLoader.ViewModels
         public string Version { get; set; }
         public List<string> References { get; set; } = new List<string>();
 
-        public AboutViewModel()
-        {
-        }
-
         protected override void OnInitialize()
         {
             base.OnInitialize();
@@ -34,7 +30,7 @@ namespace SettingsLoader.ViewModels
 
             foreach (var item in refs)
             {
-                References.Add($"{item.Name} ({item.Version})");
+                References.Add($"- {item.Name} ({item.Version})");
             }
         }
     }

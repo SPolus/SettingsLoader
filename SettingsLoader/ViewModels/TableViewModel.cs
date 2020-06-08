@@ -14,18 +14,9 @@ namespace SettingsLoader.ViewModels
     {
         private readonly IEventAggregator _events;
 
-        public string PortSettings => IoC.Get<ShellViewModel>().PortSettings;
+        public string PortSettings { get; set; }
 
-        private BindableCollection<TableModel> _registers = new BindableCollection<TableModel>();
-
-        public BindableCollection<TableModel> Registers
-        {
-            get => _registers;
-            set 
-            { 
-                _registers = value; 
-            }
-        }
+        public BindableCollection<TableModel> Registers { get; set; }
 
         public TableViewModel(IEventAggregator events)
         {
@@ -48,41 +39,23 @@ namespace SettingsLoader.ViewModels
             }
         }
 
-
-        public void Registers_PreviewKeyDown(KeyEventArgs e)
+        public void Read()
         {
-            if (e.Key == Key.Up || e.Key == Key.Down)
+            // open comport
+
+            foreach (var register in Registers)
             {
-                e.Handled = true;
+
             }
 
-            Registers_KeyDown(e);
-        }
-
-        private void Registers_KeyDown(KeyEventArgs e)
-        {
-            if (e.KeyboardDevice.Modifiers == ModifierKeys.Control && e.Key == Key.Up)
-            {
-                MessageBox.Show("CTRL + UP");
-            }
-
-            if (e.KeyboardDevice.Modifiers == ModifierKeys.Control && e.Key == Key.Down)
-            {
-                MessageBox.Show("CTRL + DOWN");
-            }
-            
-            e.Handled = false;
-        }
-
-        public void AddRow()
-        {
-            Registers.Add(new TableModel());
+            //close com port
         }
 
         protected override void OnActivate()
         {
             base.OnActivate();
             Registers = IoC.Get<ShellViewModel>().Registers;
+            PortSettings = IoC.Get<ShellViewModel>().PortSettings;
             Application.Current.MainWindow.WindowState = WindowState.Maximized;
         }
     }

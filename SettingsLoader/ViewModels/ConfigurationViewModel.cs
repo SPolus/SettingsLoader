@@ -9,6 +9,8 @@ using System.Collections.Specialized;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Input;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace SettingsLoader.ViewModels
 {
@@ -39,6 +41,8 @@ namespace SettingsLoader.ViewModels
 			{
 				_selectedRegister = value;
 				NotifyOfPropertyChange(() => SelectedRegister);
+				NotifyOfPropertyChange(() => CanMoveUp);
+				NotifyOfPropertyChange(() => CanMoveDown);
 			}
 		}
 
@@ -56,7 +60,7 @@ namespace SettingsLoader.ViewModels
 			NotifyOfPropertyChange(() => Registers);
 		}
 
-		public bool CanMoveUp => true;
+		public bool CanMoveUp => Registers.IndexOf(SelectedRegister) > 0;
 		public void MoveUp()
 		{
 			if (SelectedRegister != null)
@@ -72,16 +76,32 @@ namespace SettingsLoader.ViewModels
 
 					Registers = tempList;
 
-					//NotifyOfPropertyChange(() => Registers);
-					//NotifyOfPropertyChange(() => SelectedRegister);
+					NotifyOfPropertyChange(() => Registers);
+					NotifyOfPropertyChange(() => SelectedRegister);
 				}
 			}
 		}
 
-		public bool CanMoveDown => true;
+		public bool CanMoveDown => Registers.IndexOf(SelectedRegister) < Registers.Count - 1;
 		public void MoveDown()
 		{
+			if (SelectedRegister != null)
+			{
+				BindingList<TableModel> tempList = new BindingList<TableModel>(Registers);
+				var index = Registers.IndexOf(SelectedRegister);
 
+				if (index < Registers.Count - 1)
+				{
+					var temp = tempList[index + 1];
+					tempList[index + 1] = tempList[index];
+					tempList[index] = temp;
+
+					Registers = tempList;
+
+					NotifyOfPropertyChange(() => Registers);
+					NotifyOfPropertyChange(() => SelectedRegister);
+				}
+			}
 		}
 
 		public void Registers_PreviewKeyDown(KeyEventArgs e)

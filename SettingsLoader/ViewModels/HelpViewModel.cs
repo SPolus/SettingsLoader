@@ -9,8 +9,5 @@ namespace SettingsLoader.ViewModels
 {
     public class HelpViewModel : Screen
     {
-        public HelpViewModel()
-        {
-        }
     }
 }

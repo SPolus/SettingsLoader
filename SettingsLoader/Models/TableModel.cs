@@ -1,18 +1,9 @@
 ﻿using Caliburn.Micro;
-using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SettingsLoader.Models
 {
-    public class TableModel : INotifyPropertyChanged
+    public class TableModel : PropertyChangedBase
     {
-        public int Id { get; set; }
-
         private int _register;
         public int Register
         {
@@ -22,20 +13,64 @@ namespace SettingsLoader.Models
                 if (_register == value) return;
                 
                 _register = value;
-                OnProppertyChanged(nameof(Register));
+
+                NotifyOfPropertyChange(() => Register);
             }
         }
 
-        private int _function;
-        public int Function
+        private BindableCollection<int> _readFunctions = new BindableCollection<int> { 1, 2, 3, 4 };
+        public BindableCollection<int> ReadFunctions
         {
-            get { return _function; }
+            get { return _readFunctions; }
             set 
             {
-                if (_function == value) return;
+                if (_readFunctions == value) return;
 
-                _function = value;
-                OnProppertyChanged(nameof(Function));
+                _readFunctions = value;
+
+                NotifyOfPropertyChange(() => ReadFunctions);
+            }
+        }
+
+        private int _selectedReadFunction;
+
+        public int SelectedReadFunction
+        {
+            get { return _selectedReadFunction; }
+            set
+            {
+                if (_selectedReadFunction == value) return;
+
+                _selectedReadFunction = value;
+                NotifyOfPropertyChange(() => SelectedReadFunction);
+            }
+        }
+
+        private BindableCollection<int> _writeFunctions = new BindableCollection<int> { 5, 6, 15, 16 };
+
+        public BindableCollection<int> WriteFunctions
+        {
+            get { return _writeFunctions; }
+            set 
+            {
+                if (_writeFunctions == value) return;
+                
+                _writeFunctions = value;
+                NotifyOfPropertyChange(() => WriteFunctions);
+            }
+        }
+
+        private int _selectedWriteFunction;
+
+        public int SelectedWriteFunction
+        {
+            get { return _selectedWriteFunction; }
+            set 
+            {
+                if (_selectedReadFunction == value) return;
+
+                _selectedWriteFunction = value;
+                NotifyOfPropertyChange(() => SelectedWriteFunction);
             }
         }
 
@@ -48,7 +83,7 @@ namespace SettingsLoader.Models
                 if (_name == value) return;
 
                 _name = value;
-                OnProppertyChanged(nameof(Name));
+                NotifyOfPropertyChange(() => Name);
             }
         }
 
@@ -61,14 +96,8 @@ namespace SettingsLoader.Models
                 if (_description == value) return;
 
                 _description = value;
-                OnProppertyChanged(nameof(Description));
+                NotifyOfPropertyChange(() => Description);
             }
         }
-        protected virtual void OnProppertyChanged(string propertyName = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

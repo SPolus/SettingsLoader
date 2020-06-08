@@ -17,7 +17,7 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Border Grid.Row="1" Grid.Column="1" BorderThickness="1" BorderBrush="Gray" Padding="3">
+        <Border Grid.Row="1" Grid.Column="1" BorderThickness="0" BorderBrush="Gray" Padding="3">
             <StackPanel Orientation="Vertical">
                 <StackPanel Orientation="Horizontal" Margin="0 0 0 10">
                     <TextBlock Text="Author: "/>
@@ -28,7 +28,7 @@
                     <TextBlock x:Name="Version"/>
                 </StackPanel>
                 <TextBlock Text="References:"/>
-                <ListBox x:Name="References"/>
+                <ListBox x:Name="References" BorderThickness="0"/>
             </StackPanel>
         </Border>
     </Grid>
