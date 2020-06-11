@@ -25,8 +25,27 @@
             <Button Content="Read" Grid.Column="0"/>
             <Button Content="Write" Grid.Column="1"/>
         </Grid>
-        <DataGrid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" 
-                  x:Name="Registers" AutoGenerateColumns="True" CanUserAddRows="False">
+        <DataGrid x:Name="Registers" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                  AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False"
+                  CanUserResizeRows="False" CanUserSortColumns="False" SelectionUnit="FullRow" SelectionMode="Single">
+            <DataGrid.CellStyle>
+                <Style TargetType="DataGridCell">
+                    <Setter Property="ToolTip" Value="{Binding Path=Description}"/>
+                </Style>
+            </DataGrid.CellStyle>
+            <DataGrid.Columns>
+
+                <!--Register-->
+                <DataGridTextColumn Header="Register" Binding="{Binding Register, Mode=OneWay}" Width="75"/>
+
+                <!--Name-->
+                <DataGridTextColumn Header="Name" Binding="{Binding Name, Mode=OneWay}" Width="300"/>
+
+                <!--Write to device-->
+                
+                <!--Read from device-->
+
+            </DataGrid.Columns>
         </DataGrid>
     </Grid>
 </UserControl>

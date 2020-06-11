@@ -1,11 +1,16 @@
 ﻿using Caliburn.Micro;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using System;
 
 namespace SettingsLoader.Models
 {
+    [JsonObject(MemberSerialization = MemberSerialization.OptIn, NamingStrategyType = typeof(CamelCaseNamingStrategy))]
     public class TableModel : PropertyChangedBase
     {
-        private int _register;
-        public int Register
+        private System.UInt16 _register;
+        [JsonProperty]
+        public System.UInt16 Register
         {
             get { return _register; }
             set 
@@ -18,7 +23,22 @@ namespace SettingsLoader.Models
             }
         }
 
-        private BindableCollection<int> _readFunctions = new BindableCollection<int> { 1, 2, 3, 4 };
+        private DataFormat _selectedDataFormat;
+        [JsonProperty]
+        public DataFormat SelectedDataFormat
+        {
+            get { return _selectedDataFormat; }
+            set
+            {
+                if (_selectedDataFormat == value) return;
+
+                _selectedDataFormat = value;
+                NotifyOfPropertyChange(() => SelectedDataFormat);
+            }
+        }
+
+
+        private BindableCollection<int> _readFunctions = new BindableCollection<int> { 0, 1, 2, 3, 4 };
         public BindableCollection<int> ReadFunctions
         {
             get { return _readFunctions; }
@@ -33,7 +53,7 @@ namespace SettingsLoader.Models
         }
 
         private int _selectedReadFunction;
-
+        [JsonProperty]
         public int SelectedReadFunction
         {
             get { return _selectedReadFunction; }
@@ -46,7 +66,7 @@ namespace SettingsLoader.Models
             }
         }
 
-        private BindableCollection<int> _writeFunctions = new BindableCollection<int> { 5, 6, 15, 16 };
+        private BindableCollection<int> _writeFunctions = new BindableCollection<int> { 0, 5, 6, 15, 16 };
 
         public BindableCollection<int> WriteFunctions
         {
@@ -61,7 +81,7 @@ namespace SettingsLoader.Models
         }
 
         private int _selectedWriteFunction;
-
+        [JsonProperty]
         public int SelectedWriteFunction
         {
             get { return _selectedWriteFunction; }
@@ -75,6 +95,7 @@ namespace SettingsLoader.Models
         }
 
         private string _name;
+        [JsonProperty]
         public string Name
         {
             get { return _name; }
@@ -88,6 +109,7 @@ namespace SettingsLoader.Models
         }
 
         private string _description;
+        [JsonProperty]
         public string Description
         {
             get { return _description; }
@@ -97,6 +119,41 @@ namespace SettingsLoader.Models
 
                 _description = value;
                 NotifyOfPropertyChange(() => Description);
+            }
+        }
+
+        private double _writeToDevice;
+        [JsonProperty]
+        public double WriteToDevice
+        {
+            get { return _writeToDevice; }
+            set 
+            {
+                if (_writeToDevice == value) return;
+
+                if (SelectedDataFormat == DataFormat.uint16 && value < 0) return;
+
+                if (SelectedDataFormat == DataFormat.uint16 || SelectedDataFormat == DataFormat.int16)
+                {
+                    var success = int.TryParse(value.ToString(), out int result);
+
+                    if (!success) return;
+                }
+
+                _writeToDevice = value;
+                NotifyOfPropertyChange(() => WriteToDevice);
+            }
+        }
+
+        private double _readFromDevice;
+        public double ReadFromDevice
+        {
+            get { return _readFromDevice; }
+            set 
+            {
+                _readFromDevice = value;
+
+                NotifyOfPropertyChange(() => ReadFromDevice);
             }
         }
     }

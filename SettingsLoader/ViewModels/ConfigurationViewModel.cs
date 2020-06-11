@@ -16,7 +16,7 @@ namespace SettingsLoader.ViewModels
 {
     public class ConfigurationViewModel : Screen
     {
-		public bool IsModified { get; private set; }
+		public bool IsModified { get; set; }
 
 		private BindingList<TableModel> _registers = new BindingList<TableModel>();
 
@@ -51,6 +51,7 @@ namespace SettingsLoader.ViewModels
 		{
 			Registers.Add(new TableModel());
 			NotifyOfPropertyChange(() => Registers);
+			NotifyOfPropertyChange(() => CanRemoveRow);
 		}
 
 		public bool CanRemoveRow => Registers.Count > 0;
@@ -58,6 +59,7 @@ namespace SettingsLoader.ViewModels
 		{
 			Registers.Remove(SelectedRegister);
 			NotifyOfPropertyChange(() => Registers);
+			NotifyOfPropertyChange(() => CanRemoveRow);
 		}
 
 		public bool CanMoveUp => Registers.IndexOf(SelectedRegister) > 0;
@@ -78,6 +80,8 @@ namespace SettingsLoader.ViewModels
 
 					NotifyOfPropertyChange(() => Registers);
 					NotifyOfPropertyChange(() => SelectedRegister);
+					NotifyOfPropertyChange(() => CanMoveUp);
+					NotifyOfPropertyChange(() => CanMoveDown);
 				}
 			}
 		}
@@ -100,6 +104,8 @@ namespace SettingsLoader.ViewModels
 
 					NotifyOfPropertyChange(() => Registers);
 					NotifyOfPropertyChange(() => SelectedRegister);
+					NotifyOfPropertyChange(() => CanMoveUp);
+					NotifyOfPropertyChange(() => CanMoveDown);
 				}
 			}
 		}
@@ -133,17 +139,37 @@ namespace SettingsLoader.ViewModels
 		{
 			base.OnActivate();
 
-			foreach (var item in IoC.Get<ShellViewModel>().Registers)
-			{
-				Registers.Add(item);
-			}
+			Registers = new BindingList<TableModel>(IoC.Get<ShellViewModel>().Registers);
 
-			_registers.ListChanged += Registers_ListChanged;
+			Registers.ListChanged += Registers_ListChanged;
 		}
 
 		private void Registers_ListChanged(object sender, ListChangedEventArgs e)
 		{
 			IsModified = true;
+		}
+
+		protected override void OnDeactivate(bool close)
+		{
+			if (IsModified)
+			{
+				var result = MessageBox.Show("Save changes?", "", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes);
+
+				switch (result)
+				{
+					case MessageBoxResult.Yes:
+						IoC.Get<ShellViewModel>().Registers = Registers;
+						IoC.Get<ShellViewModel>().FileSave();
+						break;
+
+					default:
+						break;
+				}
+
+				IsModified = false;
+			}
+
+			base.OnDeactivate(close);
 		}
 	}
 }

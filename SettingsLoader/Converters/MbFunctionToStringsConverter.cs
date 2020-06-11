@@ -55,21 +55,21 @@ namespace SettingsLoader.Converters
 
             switch (function)
             {
-                case 1: result = "Read Coils"; break;
+                case 1: result = "01: Read Coils (0x01)"; break;
 
-                case 2: result = "Read Discrete"; break;
+                case 2: result = "02: Read Discrete (0x02)"; break;
 
-                case 3: result = "Read Holding Registers"; break;
+                case 3: result = "03: Read Holding Registers (0x03)"; break;
 
-                case 4: result = "Read Input Registers"; break;
+                case 4: result = "04: Read Input Registers (0x04)"; break;
 
-                case 5: result = "Write Single Coil"; break;
+                case 5: result = "05: Write Single Coil (0x05)"; break;
 
-                case 6: result = "Write Single Register"; break;
+                case 6: result = "06: Write Single Register (0x06)"; break;
 
-                case 15: result = "Write Multiple Coils"; break;
+                case 15: result = "15: Write Multiple Coils (0x0F)"; break;
 
-                case 16: result = "Write Multiple Registers"; break;
+                case 16: result = "16: Write Multiple Registers (0x10)"; break;
 
                 default: result = ""; break;
             }
@@ -95,21 +95,21 @@ namespace SettingsLoader.Converters
 
             switch (function)
             {
-                case "Read Coils": result = 1; break;
+                case "01: Read Coils (0x01)": result = 1; break;
 
-                case "Read Discrete": result = 2; break;
+                case "02: Read Discrete (0x02)": result = 2; break;
 
-                case "Read Holding Registers": result = 3; break;
+                case "03: Read Holding Registers (0x03)": result = 3; break;
 
-                case "Read Input Registers": result = 4; break;
+                case "04: Read Input Registers (0x04)": result = 4; break;
 
-                case "Write Single Coil": result = 5; break;
+                case "05: Write Single Coil (0x05)": result = 5; break;
 
-                case "Write Single Register": result = 6; break;
+                case "06: Write Single Register (0x06)": result = 6; break;
 
-                case "Write Multiple Coils": result = 15; break;
+                case "15: Write Multiple Coils (0x0F)": result = 15; break;
 
-                case "Write Multiple Registers": result = 16; break;
+                case "16: Write Multiple Registers (0x10)": result = 16; break;
 
                 default: result = 0; break;
             }

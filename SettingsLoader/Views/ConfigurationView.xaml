@@ -4,31 +4,69 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:cal="http://www.caliburnproject.org"
+             xmlns:core="clr-namespace:System;assembly=mscorlib"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:local="clr-namespace:SettingsLoader.Views"
+             xmlns:local2="clr-namespace:SettingsLoader.Models"
              xmlns:conv="clr-namespace:SettingsLoader.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    
     <UserControl.Resources>
         <conv:MbFunctionToStringsConverter x:Key="MbFunctionToStringsConverter"/>
+        <ObjectDataProvider x:Key="DataFormat" MethodName="GetValues" ObjectType="{x:Type core:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type Type="local2:DataFormat"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
     </UserControl.Resources>
-    <StackPanel Orientation="Vertical">
-        <StackPanel Orientation="Horizontal">
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
+        <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0">
             <Button x:Name="AddRow" Content="Add" Width="50" Height="30"/>
             <Button x:Name="RemoveRow" Content="Remove" Width="50" Height="30"/>
             <Button x:Name="MoveUp" Content="Up" Width="50" Height="30"/>
             <Button x:Name="MoveDown" Content="Down" Width="50" Height="30"/>
         </StackPanel>
-        <DataGrid x:Name="Registers" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False"
-                  CanUserResizeRows="False" CanUserSortColumns="False" SelectionUnit="FullRow" SelectionMode="Single"
-                  cal:Message.Attach="
-                  [PreviewKeyDown] = [Action Registers_PreviewKeyDown($eventArgs)]
-                  "
-                  >
+        <DataGrid x:Name="Registers" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False"
+                  CanUserReorderColumns="False" CanUserResizeRows="True" CanUserSortColumns="False" SelectionUnit="FullRow" SelectionMode="Single"
+                  cal:Message.Attach="[PreviewKeyDown] = [Action Registers_PreviewKeyDown($eventArgs)]"
+                  ScrollViewer.CanContentScroll="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                  ScrollViewer.VerticalScrollBarVisibility="Auto"
+                  Grid.Row="1" Grid.Column="0"
+                  EnableColumnVirtualization="False" EnableRowVirtualization="False">
+
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Register" Binding="{Binding Register, Mode=TwoWay}"/>
-                <DataGridTextColumn Header="Name" Binding="{Binding Name, Mode=TwoWay}"/>
-                <DataGridComboBoxColumn Header="Read Function">
+                <!--Register-->
+                <DataGridTextColumn Header="Register" Binding="{Binding Register, Mode=TwoWay}" Width="75"/>
+
+                <!--Name-->
+                <DataGridTextColumn Header="Name" Binding="{Binding Name, Mode=TwoWay}" Width="300"/>
+
+                <!--Data Format-->
+                <DataGridComboBoxColumn Header="Data Format" Width="75" ItemsSource="{Binding Source={StaticResource DataFormat}}"
+                                        SelectedItemBinding="{Binding Path=SelectedDataFormat, Mode=TwoWay, UpdateSourceTrigger=LostFocus}">
+                    <DataGridComboBoxColumn.EditingElementStyle>
+                        <Style TargetType="ComboBox">
+                            <Style.Triggers>
+                                <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                                    <Setter Property="IsDropDownOpen" Value="True"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGridComboBoxColumn.EditingElementStyle>
+                </DataGridComboBoxColumn>
+
+                <!--Read Function-->
+                <DataGridComboBoxColumn Header="Read Function" Width="150">
                     <DataGridComboBoxColumn.ElementStyle>
                         <Style TargetType="ComboBox">
                             <Setter Property="ItemsSource" Value="{Binding Path=ReadFunctions, Converter={StaticResource MbFunctionToStringsConverter}}"/>
@@ -37,12 +75,57 @@
                     </DataGridComboBoxColumn.ElementStyle>
                     <DataGridComboBoxColumn.EditingElementStyle>
                         <Style TargetType="ComboBox">
+                            <Style.Triggers>
+                                <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                                    <Setter Property="IsDropDownOpen" Value="True"/>
+                                </Trigger>
+                            </Style.Triggers>
                             <Setter Property="ItemsSource" Value="{Binding Path=ReadFunctions, Converter={StaticResource MbFunctionToStringsConverter}}"/>
-                            <Setter Property="SelectedItem" Value="{Binding Path=SelectedReadFunction, Converter={StaticResource MbFunctionToStringsConverter}}"/>
+                            <Setter Property="SelectedItem" Value="{Binding Path=SelectedReadFunction, Converter={StaticResource MbFunctionToStringsConverter}, UpdateSourceTrigger=LostFocus}"/>
                         </Style>
                     </DataGridComboBoxColumn.EditingElementStyle>
                 </DataGridComboBoxColumn>
+
+                <!--Write Function-->
+                <DataGridComboBoxColumn Header="Write Function" Width="150">
+                    <DataGridComboBoxColumn.ElementStyle>
+                        <Style TargetType="ComboBox">
+                            <Setter Property="ItemsSource" Value="{Binding Path=WriteFunctions, Converter={StaticResource MbFunctionToStringsConverter}}"/>
+                            <Setter Property="SelectedItem" Value="{Binding Path=SelectedWriteFunction, Converter={StaticResource MbFunctionToStringsConverter}}"/>
+                        </Style>
+                    </DataGridComboBoxColumn.ElementStyle>
+                    <DataGridComboBoxColumn.EditingElementStyle>
+                        <Style TargetType="ComboBox">
+                            <Style.Triggers>
+                                <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                                    <Setter Property="IsDropDownOpen" Value="True"/>
+                                </Trigger>
+                            </Style.Triggers>
+                            <Setter Property="ItemsSource" Value="{Binding Path=WriteFunctions, Converter={StaticResource MbFunctionToStringsConverter}}"/>
+                            <Setter Property="SelectedItem" Value="{Binding Path=SelectedWriteFunction, Converter={StaticResource MbFunctionToStringsConverter}, UpdateSourceTrigger=LostFocus}"/>
+                        </Style>
+                    </DataGridComboBoxColumn.EditingElementStyle>
+                </DataGridComboBoxColumn>
+
+                <!--Write to Device-->
+                <DataGridTextColumn Header="Write" Binding="{Binding Path=WriteToDevice, Mode=TwoWay}" Width="75">
+                </DataGridTextColumn>
+
+                <!--Description-->
+                <DataGridTemplateColumn Header="Description" Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Path=Description, Mode=OneWay}" TextWrapping="Wrap"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                    <DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate>
+                            <TextBox Text="{Binding Path=Description, Mode=TwoWay}" TextWrapping="Wrap" AcceptsReturn="True"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellEditingTemplate>
+                </DataGridTemplateColumn>
+
             </DataGrid.Columns>
         </DataGrid>
-    </StackPanel>
+    </Grid>
 </UserControl>

@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Caliburn.Micro;
+using SettingsLoader.Models;
+using SettingsLoader.Services;
 using SettingsLoader.ViewModels;
 
 namespace SettingsLoader
@@ -22,12 +24,13 @@ namespace SettingsLoader
             _container
                 .Singleton<IWindowManager, WindowManager>()
                 .Singleton<IEventAggregator, EventAggregator>()
-                .Singleton<ShellViewModel>();
+                .Singleton<ShellViewModel>()
+                .Singleton<ConfigurationViewModel>()
+                .Singleton<IFileService<TableModel>, JsonFileService<TableModel>>();
 
             _container
                 .PerRequest<PortSettingsViewModel>()
                 .PerRequest<TableViewModel>()
-                .PerRequest<ConfigurationViewModel>()
                 .PerRequest<HelpViewModel>()
                 .PerRequest<AboutViewModel>();
 

@@ -10,7 +10,7 @@ namespace SettingsLoader.Services
 {
     public class JsonFileService<T> : IFileService<T>
     {
-        public T LoadData(string path)
+        public IEnumerable<T> LoadData(string path)
         {
             var file = new FileInfo(path);
 
@@ -28,11 +28,12 @@ namespace SettingsLoader.Services
                     throw new FileFormatException("File is empty.");
                 }
 
-                return JsonConvert.DeserializeObject<T>(fileText);
+                return JsonConvert.DeserializeObject<IEnumerable<T>>(fileText);
             }
         }
 
-        public void SaveData(string path, T data)
+        
+        public void SaveData(string path, IEnumerable<T> data)
         {
             string dir = Path.GetDirectoryName(path);
 

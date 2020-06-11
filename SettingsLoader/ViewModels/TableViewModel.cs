@@ -2,6 +2,7 @@
 using SettingsLoader.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,7 +17,7 @@ namespace SettingsLoader.ViewModels
 
         public string PortSettings { get; set; }
 
-        public BindableCollection<TableModel> Registers { get; set; }
+        public BindingList<TableModel> Registers { get; set; }
 
         public TableViewModel(IEventAggregator events)
         {

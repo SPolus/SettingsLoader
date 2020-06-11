@@ -2,10 +2,13 @@
 using Microsoft.Win32;
 using SettingsLoader.Models;
 using SettingsLoader.Services;
+using SettingsLoader.Views;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -14,32 +17,20 @@ namespace SettingsLoader.ViewModels
 {
     public class ShellViewModel : Conductor<Screen>.Collection.OneActive, IHandle<string>
     {
-        //private readonly string[] FUNCTIONS = new string[8]
-        //{
-        //    "Read Coils",
-        //    "Read Discrete",
-        //    "Read Holding Registers",
-        //    "Read Input Registers",
-        //    "Write Single Coil",
-        //    "Write Multiple Coils",
-        //    "Write Single Register",
-        //    "Write Multiple Registers"
-        //};
-
         private readonly IEventAggregator _events;
+        private readonly IFileService<TableModel> _fileService;
+        
+        private string _path = Environment.CurrentDirectory;
+        
+        public bool IsFileOpen { get; private set; }
+        public bool IsFileNew { get; private set; }
 
-        private string _path = $"{Environment.CurrentDirectory}\\LastSession\\DeviceConfig.json";
-
-        private JsonFileService<BindableCollection<TableModel>> _jsonFileService = new JsonFileService<BindableCollection<TableModel>>();
-
-        private bool _isFileOpened;
-
-        public ShellViewModel(IEventAggregator events)
+        public ShellViewModel(IEventAggregator events, IFileService<TableModel> fileService)
         {
             _events = events;
             _events.Subscribe(this);
 
-            ActivateItem(IoC.Get<PortSettingsViewModel>());
+            _fileService = fileService;
         }
 
         private string _portSettings;
@@ -53,9 +44,9 @@ namespace SettingsLoader.ViewModels
             }
         }
 
-        private BindableCollection<TableModel> _registers = new BindableCollection<TableModel>();
+        private BindingList<TableModel> _registers = new BindingList<TableModel>();
 
-        public BindableCollection<TableModel> Registers
+        public BindingList<TableModel> Registers
         {
             get { return _registers; }
             set { _registers = value; }
@@ -63,7 +54,16 @@ namespace SettingsLoader.ViewModels
 
         public void FileNew()
         {
+            Registers = new BindingList<TableModel>();
 
+            ActivateItem(IoC.Get<ConfigurationViewModel>());
+
+            IsFileNew = true;
+            IsFileOpen = false;
+
+            NotifyOfPropertyChange(() => CanEditConfiguration);
+            NotifyOfPropertyChange(() => CanFileSave);
+            NotifyOfPropertyChange(() => CanFileSaveAs);
         }
         
         public void FileOpen()
@@ -86,64 +86,56 @@ namespace SettingsLoader.ViewModels
 
         private void OpenFile(string path)
         {
+            Registers = new BindingList<TableModel>();
+
             try
             {
-                Registers = _jsonFileService.LoadData(path);
+                _fileService.LoadData(path).ToList().ForEach(row => Registers.Add(row));
 
-                if (PortSettings != null)
-                {
-                    ActivateItem(IoC.Get<TableViewModel>());
-                }
+                ActivateItem(IoC.Get<TableViewModel>());
 
-                _isFileOpened = true;
+                IsFileOpen = true;
                 NotifyOfPropertyChange(() => CanEditConfiguration);
                 NotifyOfPropertyChange(() => CanFileSave);
                 NotifyOfPropertyChange(() => CanFileSaveAs);
-
             }
 
-            catch (FileNotFoundException)
+            catch (FileNotFoundException ex)
             {
-                var result = MessageBox.Show("Create File?", "File not found", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-
-                switch (result)
-                {
-                    case MessageBoxResult.Yes:
-                        if (string.IsNullOrEmpty(path))
-                        {
-                            TryClose();
-                        }
-
-                        File.CreateText(path).Dispose();
-                        break;
-
-                    case MessageBoxResult.No:
-                        TryClose();
-                        break;
-                }
-
-                Registers = new BindableCollection<TableModel>();
+                IsFileOpen = false;
+                MessageBox.Show(ex.Message, "", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
 
             catch (FileFormatException ex)
             {
-                Registers = new BindableCollection<TableModel>();
+                IsFileOpen = false;
                 MessageBox.Show(ex.Message, "", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
 
             catch(Exception ex)
             {
+                IsFileOpen = false;
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 TryClose();
             }
         }
 
-        public bool CanFileSave => _isFileOpened;
+        public bool CanFileSave => IsFileOpen || IsFileNew;
         public void FileSave()
         {
+            Registers = IoC.Get<ConfigurationViewModel>().Registers;
+
+            if (IsFileNew)
+            {
+                FileSaveAs();
+
+                return;
+            }
+
             try
             {
-                _jsonFileService.SaveData(_path, Registers);
+                _fileService.SaveData(_path, Registers);
+                IoC.Get<ConfigurationViewModel>().IsModified = false;
             }
             catch (Exception ex)
             {
@@ -151,9 +143,11 @@ namespace SettingsLoader.ViewModels
             }
         }
 
-        public bool CanFileSaveAs => _isFileOpened;
+        public bool CanFileSaveAs => IsFileOpen || IsFileNew;
         public void FileSaveAs()
         {
+            Registers = IoC.Get<ConfigurationViewModel>().Registers;
+
             var sfd = new SaveFileDialog()
             {
                 DefaultExt = ".json",
@@ -165,6 +159,22 @@ namespace SettingsLoader.ViewModels
 
             if (result == true)
             {
+                if (IsFileNew)
+                {
+                    IsFileNew = false;
+                    NotifyOfPropertyChange(() => CanEditConfiguration);
+                    NotifyOfPropertyChange(() => CanFileSave);
+                    NotifyOfPropertyChange(() => CanFileSaveAs);
+                }
+
+                if (!IsFileOpen)
+                {
+                    IsFileOpen = true;
+                    NotifyOfPropertyChange(() => CanEditConfiguration);
+                    NotifyOfPropertyChange(() => CanFileSave);
+                    NotifyOfPropertyChange(() => CanFileSaveAs);
+                }
+
                 _path = sfd.FileName;
                 FileSave();
             }
@@ -181,23 +191,11 @@ namespace SettingsLoader.ViewModels
             ActivateItem(IoC.Get<PortSettingsViewModel>());
         }
 
-        public bool CanEditConfiguration => _isFileOpened;
+        public bool CanEditConfiguration => IsFileOpen || IsFileNew;
         public void EditConfiguration()
         {
             ActivateItem(IoC.Get<ConfigurationViewModel>());
         }
-
-        //public bool CanViewMode => PortSettings != null;
-        //public void ViewMode()
-        //{
-        //    ActivateItem(IoC.Get<TableViewModel>());
-        //}
-
-        //public bool CanEditMode => true;
-        //public void EditMode()
-        //{
-        //    ActivateItem(IoC.Get<TableViewModel>());
-        //}
 
         public void Help()
         {
@@ -220,7 +218,7 @@ namespace SettingsLoader.ViewModels
             {
                 PortSettings = message;
 
-                if (_isFileOpened)
+                if (IsFileOpen)
                 {
                     ActivateItem(IoC.Get<TableViewModel>());
                     return;
@@ -234,8 +232,10 @@ namespace SettingsLoader.ViewModels
         protected override void OnInitialize()
         {
             base.OnInitialize();
+            ActivateItem(IoC.Get<PortSettingsViewModel>());
 
             // TODO: Create initial config file
         }
+
     }
 }
